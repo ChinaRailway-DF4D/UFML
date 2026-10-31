@@ -54,7 +54,7 @@ public final class VersionMenuPanel extends JPanel {
     private final JLabel countLabel = new JLabel();
     private final Map<VersionCategory, ToggleChip> filters = new EnumMap<>(VersionCategory.class);
     private List<VersionSummary> allVersions = List.of();
-    private VersionCategory category = VersionCategory.RELEASE;
+    private VersionCategory category = VersionCategory.ALL;
     private boolean updating;
 
     public VersionMenuPanel(String title, String subtitle, Listener listener) {
@@ -101,7 +101,7 @@ public final class VersionMenuPanel extends JPanel {
         ButtonGroup group = new ButtonGroup();
         for (VersionCategory option : VersionCategory.values()) {
             ToggleChip chip = new ToggleChip(option.label());
-            chip.setPreferredSize(new Dimension(88, 30));
+            chip.setPreferredSize(new Dimension(option == VersionCategory.ALL ? 66 : 88, 30));
             chip.setFont(Theme.regular(10.8f));
             chip.setSelected(option == category);
             chip.addActionListener(event -> setCategory(option));
@@ -203,7 +203,7 @@ public final class VersionMenuPanel extends JPanel {
     private void applyFilter(String wanted) {
         List<VersionSummary> visible = new ArrayList<>();
         for (VersionSummary version : allVersions) {
-            if (version.category() == category) visible.add(version);
+            if (category.matches(version)) visible.add(version);
         }
         updating = true;
         model.clear();
@@ -236,6 +236,7 @@ public final class VersionMenuPanel extends JPanel {
 
     private static Color typeColor(VersionCategory category) {
         return switch (category) {
+            case ALL -> Theme.MUTED;
             case RELEASE -> Theme.ACCENT;
             case SNAPSHOT -> Theme.INFO;
             case LEGACY -> Theme.WARNING;
