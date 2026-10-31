@@ -3,6 +3,7 @@ package io.github.ufml.launcher.minecraft;
 import java.util.Set;
 
 public enum VersionCategory {
+    ALL("全部"),
     RELEASE("正式版"),
     SNAPSHOT("快照版"),
     LEGACY("远古版"),
@@ -27,6 +28,10 @@ public enum VersionCategory {
     }
 
     public String label() { return label; }
+
+    public boolean matches(VersionSummary version) {
+        return this == ALL || of(version) == this;
+    }
 
     public static VersionCategory of(VersionSummary version) {
         if (version == null) return RELEASE;
